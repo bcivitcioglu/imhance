@@ -1,43 +1,5 @@
 import torch
 import torch.nn as nn
-import torchvision
-import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader
-import numpy as np
-import matplotlib.pyplot as plt
-from PIL import Image
-import os
-print("import success")
-
-class EnhancementDataset(Dataset):
-    def __init__(self, low_res_dir, high_res_dir, transform=None):
-        self.low_res_dir = low_res_dir
-        self.high_res_dir = high_res_dir
-        self.transform = transform
-        self.image_files = os.listdir(low_res_dir)
-
-    def __len__(self):
-        return len(self.image_files) # Return number of images
-    
-    def __getitem__(self,index):
-        # Get the filename of the image
-        img_name = self.image_files[index]
-        
-        # Construct full paths for low-res and high-res images
-        low_res_path = os.path.join(self.low_res_dir, img_name)
-        high_res_path = os.path.join(self.high_res_dir, img_name)
-        
-        # Open both images
-        low_res_img = Image.open(low_res_path).convert('RGB')
-        high_res_img = Image.open(high_res_path).convert('RGB')
-        
-        # Apply transformations if any
-        if self.transform:
-            low_res_img = self.transform(low_res_img)
-            high_res_img = self.transform(high_res_img)
-        
-        return low_res_img, high_res_img
-    
 
 class PatchEmbedding(nn.Module):
     def __init__(self, image_size : tuple, patch_size, embed_dim, in_channels = 3):
@@ -56,9 +18,9 @@ class PatchEmbedding(nn.Module):
         
         # Patch embedding layer
         self.patch_embed = nn.Conv2d(in_channels, embed_dim, kernel_size=patch_size, stride=patch_size)
-        self.pos_embed = nn.Parameter(torch.zeros(1, self.num_patches , embed_dim))
+        self.pos_embed = nn.Parameter(torch.rand(1, self.num_patches , embed_dim)*0.02)
 
-    def __call__(self, batch_imgs: torch.Tensor):
+    def forward(self, batch_imgs: torch.Tensor):
         assert batch_imgs.dim() == 4, "Expecting batch of images with the shape (BATCH, CHANNEL, HEIGHT, WIDTH)"
         in_batch_size, in_chn, in_h, in_w = batch_imgs.shape
         assert (in_h == self.effective_h and in_w == self.effective_w), f"Input image shape must be ({self.effective_h}, {self.effective_w}) but given ({in_h,in_w})"
@@ -76,3 +38,4 @@ class PatchEmbedding(nn.Module):
         patch_sequence_image += self.pos_embed
         
         return patch_sequence_image
+    
