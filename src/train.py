@@ -10,7 +10,7 @@ from model.image_enhance_transformer import ImageEnhanceTransformer
 def train_model(model, train_loader, val_loader, num_epochs=50, device='cpu'):
     model = model.to(device)
     criterion = BalancedEnhancementLoss()
-    optimizer = Adam(model.parameters(), lr=1e-4)
+    optimizer = Adam(model.parameters(), lr=3e-5)
     scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5)
 
     for epoch in range(num_epochs):
@@ -53,7 +53,7 @@ def validate_model(model, val_loader, criterion, device):
 if __name__ == "__main__":
     # Hyperparameters
     batch_size = 4
-    num_epochs = 30
+    num_epochs = 15
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Data
