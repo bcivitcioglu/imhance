@@ -26,15 +26,20 @@ class ImageEnhanceTransformer(nn.Module):
         self.num_patches_w = self.patch_embed.num_patches_w
         self.num_patches = self.patch_embed.num_patches
 
+        self.upscale_factor = output_size[0] // image_size[0]  # Assuming square images
+        self.output_patch_size = patch_size * self.upscale_factor
+        
+        # self.to_patch = nn.Linear(self.embed_dim, self.patch_size * self.patch_size * self.in_channels)
+        self.to_patch = nn.Linear(self.embed_dim, self.output_patch_size * self.output_patch_size * self.in_channels)
+
 
 
         # Linear projection for reconstruction
-        self.to_patch = nn.Linear(self.embed_dim, self.patch_size * self.patch_size * self.in_channels)
 
         # a layer for resizing if output_size is different from input_size
-        self.need_resize = (self.out_height, self.out_width) != (self.img_height, self.img_width)
-        if self.need_resize:
-            self.resize = nn.Upsample(size=(self.out_height, self.out_width), mode='bilinear', align_corners=False)
+        # self.need_resize = (self.out_height, self.out_width) != (self.img_height, self.img_width)
+        # if self.need_resize:
+        #     self.resize = nn.Upsample(size=(self.out_height, self.out_width), mode='bilinear', align_corners=False)
 
     def forward(self,x):
         # Input dimension: (batch_size, in_channels, img_height, img_width)
@@ -48,18 +53,20 @@ class ImageEnhanceTransformer(nn.Module):
         # Now we need to reshape the output and make sure we are returning back 
         # the desired output image sizes
         batch_size = x.shape[0]
+
         x = x.view(batch_size, self.num_patches_h, self.num_patches_w, 
-                   self.patch_size, self.patch_size, self.in_channels)
+                   self.output_patch_size, self.output_patch_size, self.in_channels)
+        x = x.permute(0, 5, 1, 3, 2, 4).contiguous()
+        x = x.view(batch_size, self.in_channels, self.out_height, self.out_width)
+
+        #x = x.view(batch_size, self.num_patches_h, self.num_patches_w, self.patch_size, self.patch_size, self.in_channels)
         # After first reshape: (batch_size, num_patches_h, num_patches_w, patch_size, patch_size, in_channels)
         # We separate all variables to regroup
-        x = x.permute(0, 5, 1, 3, 2, 4).contiguous() # contigous makes a copy of the original tensor in the memory, instead of just changing meta information
+        #x = x.permute(0, 5, 1, 3, 2, 4).contiguous() # contigous makes a copy of the original tensor in the memory, instead of just changing meta information
         # After permute: (batch_size, in_channels, num_patches_h, patch_size, num_patches_w, patch_size)
         # We put num_patches_h and patch_size adjacently, similar to num_patches_w
-        x = x.view(batch_size, self.in_channels, self.img_height, self.img_width) # like reshape but contigous
+        #x = x.view(batch_size, self.in_channels, self.img_height, self.img_width) # like reshape but contigous
         # After view: (batch_size, self.in_channels, self.img_height, self.img_width)
         # Then we get the img_heigh and img_width back
-        # Resize if necessary
-        if self.need_resize:
-            x = self.resize(x)
-        
+        # Resize if necessary        
         return x
