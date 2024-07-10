@@ -10,7 +10,7 @@ from model.image_enhance_transformer import ImageEnhanceTransformer
 def train_model(model, train_loader, val_loader, num_epochs=50, device='cpu'):
     model = model.to(device)
     criterion = BalancedEnhancementLoss()
-    optimizer = Adam(model.parameters(), lr=3e-5)
+    optimizer = Adam(model.parameters(), lr=1e-6)
     scheduler = ReduceLROnPlateau(optimizer, 'min', patience=5)
 
     for epoch in range(num_epochs):
@@ -25,7 +25,7 @@ def train_model(model, train_loader, val_loader, num_epochs=50, device='cpu'):
             
             optimizer.zero_grad()
             enhanced = model(low_res)
-            loss = criterion(low_res, high_res, enhanced)
+            loss = criterion(enhanced, high_res)
             loss.backward()
             optimizer.step()
 
@@ -46,14 +46,14 @@ def validate_model(model, val_loader, criterion, device):
         for low_res, high_res in val_loader:
             low_res, high_res = low_res.to(device), high_res.to(device)
             enhanced = model(low_res)
-            loss = criterion(low_res, high_res, enhanced)
+            loss = criterion(enhanced, high_res)
             val_loss += loss.item()
     return val_loss / len(val_loader)
 
 if __name__ == "__main__":
     # Hyperparameters
-    batch_size = 4
-    num_epochs = 15
+    batch_size = 8
+    num_epochs = 20
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # Data
@@ -69,7 +69,7 @@ if __name__ == "__main__":
         embed_dim=256,
         num_layers=6,
         num_heads=8,
-        output_size=(256, 256)  # Adjust based on your desired output size
+        output_size=(1024, 1024)  # Adjust based on your desired output size
     )
     print("Beginning the training...")
     # Train

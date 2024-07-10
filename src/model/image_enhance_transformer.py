@@ -1,6 +1,6 @@
 from torch import nn 
-from model.transformer import TransformerEncoder
-from model.patch_embedding import PatchEmbedding
+from .transformer import TransformerEncoder
+from .patch_embedding import PatchEmbedding
 
 class ImageEnhanceTransformer(nn.Module):
     def __init__(self, image_size : tuple, patch_size, embed_dim, num_layers, num_heads, output_size:tuple, in_channels = 3):

@@ -5,12 +5,17 @@ import torchvision.transforms as transforms
 from glob import glob
 
 class EnhancementDataset(Dataset):
-    def __init__(self, low_res_dir, high_res_dir, transform=None):
+    def __init__(self, low_res_dir, high_res_dir, transform=None,low_res_size=(256, 256), high_res_size=(1024, 1024)):
         self.low_res_dir = low_res_dir
         self.high_res_dir = high_res_dir
-        self.transform = transform or transforms.Compose([
+
+        self.low_res_transform = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize((256, 256))  # Adjust size as needed
+            transforms.Resize(low_res_size)
+        ])
+        self.high_res_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Resize(high_res_size)
         ])
 
         # Find all high-res images
@@ -45,7 +50,7 @@ class EnhancementDataset(Dataset):
                 raise IOError(f"No valid image pair found for index {index}")
         
         # Apply transformations
-        low_res_tensor = self.transform(low_res_img)
-        high_res_tensor = self.transform(high_res_img)
+        low_res_tensor = self.low_res_transform(low_res_img)
+        high_res_tensor = self.high_res_transform(high_res_img)
         
         return low_res_tensor, high_res_tensor

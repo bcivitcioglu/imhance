@@ -1,5 +1,5 @@
 from torch import nn
-from model.attention import MultiHeadAttention
+from .attention import MultiHeadAttention
 
 class TransformerEncoderBlock(nn.Module):
     def __init__(self, embed_dim, num_heads,ff_dim=2048):
