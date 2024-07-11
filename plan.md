@@ -1,7 +1,7 @@
 # 100 Steps to Implement a Transformer-based Image Enhancement Project
 
 ```
-progress = %83
+progress = %100
 ```
 
 ## Environment Setup and Data Preparation
@@ -163,16 +163,16 @@ progress = %83
 
 ## Results Visualization
 
-84. Create a function `visualize_results(model, low_res_image, high_res_image)`.
-85. Load and preprocess the input image in the function.
-86. Pass the input image through the model.
-87. Convert model output to a PIL Image.
-88. Create a figure with subplots for input, output, and target images.
-89. Display the input image in the first subplot.
-90. Display the model output in the second subplot.
-91. Display the target high-res image in the third subplot.
-92. Add titles to the subplots.
-93. Show the figure.
+84. ~~Create a function `visualize_results(model, low_res_image, high_res_image)`.~~
+85. ~~Load and preprocess the input image in the function.~~
+86. ~~Pass the input image through the model.~~
+87. ~~Convert model output to a PIL Image.~~
+88. ~~Create a figure with subplots for input, output, and target images.~~
+89. ~~Display the input image in the first subplot.~~
+90. ~~Display the model output in the second subplot.~~
+91. ~~Display the target high-res image in the third subplot.~~
+92. ~~Add titles to the subplots.~~
+93. ~~Show the figure.~~
 
 ## Saving and Loading the Model
 
@@ -180,7 +180,7 @@ progress = %83
     ```python
     torch.save(model.state_dict(), 'enhancement_model.pth')
     ```
-95. Create a function to load the model:
+95. ~~Create a function to load the model:~~
     ```python
     def load_model(model, path):
         model.load_state_dict(torch.load(path))
@@ -189,8 +189,8 @@ progress = %83
 
 ## Final Testing and Demonstration
 
-96. Load a test image not seen during training.
-97. Preprocess the test image.
-98. Pass the test image through the model.
-99. Visualize the results using the `visualize_results` function.
-100.  Compare the enhanced image with the original using metrics like PSNR and SSIM.
+96. ~~Load a test image not seen during training.~~
+97. ~~Preprocess the test image.~~
+98. ~~Pass the test image through the model.~~
+99. ~~Visualize the results using the `visualize_results` function.~~
+100.  ~~Compare the enhanced image with the original using metrics like PSNR and SSIM.~~
